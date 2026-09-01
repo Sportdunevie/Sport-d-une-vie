@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sport d'une vie — Système</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,600&family=Lora:ital,wght@0,500;1,500;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F2EEE1;
+    --paper-warm:#EAE2CB;
+    --paper-card:#FBF9F3;
+    --ink:#1C1B17;
+    --ink-soft:#4A473E;
+    --muted:#736C5C;
+    --line:#C7BEA3;
+    --cobalt:#28359C;
+    --cobalt-deep:#1B2670;
+    --cobalt-tint:#E4E6F5;
+    --dark:#15140F;
+    --cream:#EDE7D5;
+    --weekend:#A8574E;
+    --green-bg:#C7D9B7; --green-txt:#3D5A30;
+    --red-bg:#E6C1BA; --red-txt:#8A382B;
+    --rest-bg:#D8DBED; --rest-txt:#3A3F73;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html,body{ background:var(--paper); color:var(--ink); font-family:'Poppins',sans-serif; }
+  body{ padding-bottom:36px; }
+  .mono{ font-family:'JetBrains Mono',monospace; }
+  .serif{ font-family:'Lora',serif; }
+
+  /* header */
+  header{ position:sticky; top:0; z-index:20; background:var(--dark); color:var(--cream); padding:14px 16px 0; }
+  .brand-row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .mark{ width:28px; height:28px; border-radius:50%; border:1.3px solid var(--cream); display:flex; align-items:center; justify-content:center; font-size:9px; letter-spacing:0.5px; flex:none; }
+  .brand-title{ font-size:15px; font-weight:600; letter-spacing:-0.2px; }
+  .brand-sub{ font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.5px; opacity:.85; font-weight:700; text-transform:uppercase; margin-top:1px; }
+
+  nav{ display:flex; gap:6px; overflow-x:auto; padding-bottom:10px; min-height:34px; scrollbar-width:none; }
+  nav::-webkit-scrollbar{ display:none; }
+  .tab{ flex:none; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:#9C967F; background:transparent; border:1px solid #3A382C; border-radius:20px; padding:7px 12px; white-space:nowrap; }
+  .tab.active{ background:var(--cobalt); color:var(--cream); border-color:var(--cobalt); }
+
+  main{ padding:18px 16px 40px; max-width:520px; margin:0 auto; background:var(--paper); }
+  .section{ display:none; background:var(--paper); }
+  .section.active{ display:block; }
+
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--cobalt-deep); margin-bottom:4px; }
+  h1{ font-size:22px; font-weight:600; letter-spacing:-0.3px; margin-bottom:2px; }
+  h2{ font-family:'Lora',serif; font-style:italic; font-weight:500; font-size:13.5px; color:var(--ink-soft); margin-bottom:18px; }
+  h3{ font-size:14px; font-weight:600; margin-bottom:8px; }
+
+  .card{ background:var(--paper-card); border:1px solid var(--line); border-radius:10px; padding:14px 15px; margin-bottom:12px; }
+  .card-head{ background:var(--cobalt); color:var(--cream); font-weight:700; font-size:13px; padding:9px 13px; border-radius:8px; margin-bottom:10px; text-align:center; letter-spacing:.2px; }
+  .quote-box{ background:var(--cobalt-tint); border-left:3px solid var(--cobalt); border-radius:0 8px 8px 0; padding:12px 14px; margin-bottom:12px; }
+  .quote-box p{ font-family:'Lora',serif; font-style:italic; font-weight:500; color:var(--cobalt-deep); font-size:14.5px; line-height:1.4; }
+
+  label{ display:block; font-size:11.5px; font-weight:600; color:var(--ink); margin-bottom:4px; }
+  input[type=text], input[type=number], input[type=date], textarea, select{
+    width:100%; max-width:100%; min-width:0; box-sizing:border-box; font-family:'Poppins',sans-serif; font-size:13px; color:var(--ink);
+    background:#fff; border:1px solid var(--line); border-radius:7px; padding:8px 10px;
+    outline:none;
+  }
+  input[type=date]{
+    -webkit-appearance:none; appearance:none;
+    display:block; width:100% !important; max-width:100% !important;
+    box-sizing:border-box !important; min-width:0 !important; min-height:37px;
+  }
+  input:focus, textarea:focus, select:focus{ border-color:var(--cobalt); }
+  textarea{ resize:vertical; min-height:52px; line-height:1.4; }
+  .field{ margin-bottom:11px; }
+  .field .hint{ font-size:10.5px; color:var(--muted); font-style:italic; margin-top:3px; }
+
+  .rythme-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--line); }
+  .rythme-row:last-child{ border-bottom:none; }
+  .rythme-row .n{ font-size:12.5px; font-weight:600; }
+  .rythme-row .d{ font-size:10.5px; color:var(--muted); text-align:right; max-width:60%; }
+
+  .level-row{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:7px; margin-bottom:5px; }
+  .level-row .tag{ font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:700; width:66px; flex:none; }
+  .level-row .t{ font-size:11px; color:var(--ink-soft); }
+
+  .save-note{ font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--muted); text-align:center; margin-top:14px; opacity:.7; letter-spacing:.5px; }
+
+  footer{ text-align:center; padding:26px 16px 8px; }
+  .continuity{ width:140px; margin:0 auto 8px; display:block; opacity:.8; }
+  footer p{ font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+
+  .navbtn{ background:var(--paper-warm); border:1px solid var(--line); border-radius:7px; width:34px; height:34px; font-size:16px; color:var(--ink); }
+  .weekday-row{ display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:6px; }
+  .weekday-row span{ text-align:center; font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--muted); }
+  .weekday-row span.weekend{ color:var(--weekend); font-weight:700; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:14px; }
+  .day-cell{ aspect-ratio:1; border-radius:8px; background:#fff; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:500; color:var(--ink-soft); }
+  .day-cell.empty{ background:transparent; border:none; }
+  .day-cell.weekend-off{ color:var(--weekend); font-weight:700; }
+  .day-cell.fait{ background:var(--green-bg); color:var(--green-txt); border-color:var(--green-txt); font-weight:700; }
+  .day-cell.nonfait{ background:var(--red-bg); color:var(--red-txt); border-color:var(--red-txt); font-weight:700; }
+  .day-cell.repos{ background:var(--rest-bg); color:var(--rest-txt); border-color:var(--rest-txt); font-weight:700; }
+  .day-cell.today{ box-shadow:0 0 0 2px var(--cobalt) inset; }
+
+  .legend{ display:flex; gap:14px; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
+
+  .view-toggle{ display:flex; background:var(--paper-warm); border:1px solid var(--line); border-radius:9px; padding:3px; margin-bottom:12px; }
+  .view-toggle-btn{ flex:1; background:transparent; border:none; padding:8px 0; font-family:'Poppins'; font-size:12.5px; font-weight:600; color:var(--muted); border-radius:6px; }
+  .view-toggle-btn.active{ background:var(--cobalt); color:var(--cream); }
+
+  .year-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:10px; }
+  .mini-month{ background:var(--paper-card); border:1px solid var(--line); border-radius:8px; padding:7px; }
+  .mini-month .mm-label{ font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--ink-soft); text-align:center; margin-bottom:5px; }
+  .mini-month .mm-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:1.5px; }
+  .mini-month .mm-cell{ aspect-ratio:1; border-radius:1.5px; background:var(--line); opacity:.35; }
+  .mini-month .mm-cell.fait{ background:var(--green-txt); opacity:1; }
+  .mini-month .mm-cell.nonfait{ background:var(--red-txt); opacity:1; }
+  .mini-month .mm-cell.repos{ background:var(--rest-txt); opacity:1; }
+  .mini-month .mm-cell.empty{ background:transparent; opacity:0; }
+  .year-hint{ font-size:10px; color:var(--muted); font-style:italic; text-align:center; margin-bottom:14px; }
+  .legend span{ font-size:10.5px; color:var(--ink-soft); display:flex; align-items:center; gap:5px; }
+  .dot{ width:9px; height:9px; border-radius:3px; display:inline-block; }
+
+  .stats-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:6px; }
+  .stat-card{ background:var(--paper-card); border:1px solid var(--line); border-radius:9px; padding:10px 6px; text-align:center; }
+  .stat-n{ font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; color:var(--cobalt); }
+  .stat-l{ font-size:9px; color:var(--muted); margin-top:2px; }
+
+  .quarter-card{ margin-bottom:14px; }
+  .quarter-pct{ display:flex; justify-content:space-between; align-items:center; background:var(--cobalt-tint); border-radius:7px; padding:8px 12px; margin-bottom:10px; }
+  .quarter-pct .n{ font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--cobalt-deep); font-size:15px; }
+
+  .step{ font-size:11.5px; color:var(--ink-soft); line-height:1.6; margin-bottom:4px; }
+
+  .btn-primary{ width:100%; background:var(--cobalt); color:var(--cream); border:none; border-radius:8px; padding:10px; font-family:'Poppins'; font-weight:600; font-size:12.5px; margin-top:4px; }
+  .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--muted); border-radius:7px; padding:6px 10px; font-size:10.5px; font-family:'JetBrains Mono',monospace; }
+
+  .photo-entry{ background:var(--paper-card); border:1px solid var(--line); border-radius:9px; padding:10px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .photo-entry .pd{ font-weight:600; font-size:12px; }
+  .photo-entry .pn{ font-size:10.5px; color:var(--muted); }
+
+  .revision-row{ display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--line); }
+  .revision-row:last-child{ border-bottom:none; }
+  .revision-row .m{ width:74px; flex:none; font-size:11.5px; font-weight:600; }
+  .revision-row input{ flex:1; }
+  .temps-row{ display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--line); }
+  .temps-row .a{ flex:1; font-size:11.5px; }
+  .temps-row input{ width:60px; text-align:center; padding:6px; }
+</style>
+</head>
+<body>
+
+<div id="loadingScreen" style="position:fixed; inset:0; background:var(--dark); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:100;">
+  <div class="mark mono" style="width:38px; height:38px; font-size:11px; margin-bottom:10px;">SDV</div>
+  <div class="mono" style="color:var(--cream); font-size:10px; font-weight:700; letter-spacing:2px; opacity:.85;">CHARGEMENT</div>
+</div>
+
+<header>
+  <div class="brand-row">
+    <div class="mark mono">SDV</div>
+    <div>
+      <div class="brand-title">Sport d'une vie</div>
+      <div class="brand-sub">Le système anti-abandon</div>
+    </div>
+  </div>
+  <nav id="tabbar"></nav>
+</header>
+
+<main>
+
+  <!-- ============ ACCUEIL ============ -->
+  <section id="accueil" class="section">
+    <div class="eyebrow">Bienvenue</div>
+    <h1>Ton système pour ne plus recommencer à zéro</h1>
+    <h2>Ce tracker est l'outil central de ton système. Il s'utilise avec le Guide et le Guide d'Urgence.<br><br>Commence par lire le Guide une fois, puis reviens ici chaque semaine pour cocher tes séances.</h2>
+
+    <div class="card">
+      <div class="card-head">La règle fondamentale</div>
+      <p class="step">Avant de choisir ton rythme, pose-toi cette question :</p>
+      <div class="quote-box" style="margin:10px 0;"><p>« Puis-je vraiment tenir ce rythme pendant 1 an ? »</p></div>
+      <p class="step">Si NON — réduis jusqu'à ce que la réponse soit oui. C'est du bon sens, pas de la faiblesse.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Choisis ton rythme</div>
+      <div class="rythme-row"><span class="n">1 séance / semaine</span><span class="d">Le point de départ. Suffit pour créer l'habitude. Pas de honte à commencer ici.</span></div>
+      <div class="rythme-row"><span class="n">2 séances / semaine</span><span class="d">Le plus abordable sur 1 an. Idéal pour s'installer dans la durée.</span></div>
+      <div class="rythme-row"><span class="n">3 séances / semaine</span><span class="d">Le bon équilibre. Recommandé pour la plupart des profils.</span></div>
+      <div class="rythme-row"><span class="n">4 séances / semaine</span><span class="d">Demande une vraie organisation. Sois certain(e) de pouvoir tenir.</span></div>
+      <div class="rythme-row"><span class="n">5 séances / semaine</span><span class="d">Niveau exigeant. Pose-toi honnêtement la question sur 1 an.</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Ton engagement</div>
+      <div class="field"><label>Mon sport pratiqué</label><input type="text" id="eng-sport" placeholder="Écris ici..."><div class="hint">Ex : musculation, course à pied, natation, foot...</div></div>
+      <div class="field"><label>Mon rythme choisi</label><input type="text" id="eng-rythme" placeholder="Écris ici..."><div class="hint">Ex : 3 séances / semaine</div></div>
+      <div class="field"><label>Mes jours d'entraînement</label><input type="text" id="eng-jours" placeholder="Écris ici..."><div class="hint">Ex : Lundi, mercredi, vendredi</div></div>
+      <div class="field"><label>Mon heure de séance</label><input type="text" id="eng-heure" placeholder="Écris ici..."><div class="hint">Ex : 18h30</div></div>
+      <div class="field"><label>Ma musique d'entraînement</label><input type="text" id="eng-musique" placeholder="Écris ici..."><div class="hint">De la musique que tu aimes — ton cerveau associera plaisir et sport</div></div>
+      <div class="field"><label>Ma tenue de sport</label><input type="text" id="eng-tenue" placeholder="Écris ici..."><div class="hint">Une tenue où tu te sens bien, beau/belle, qui te donne envie de t'entraîner</div></div>
+      <div class="field"><label>Mes chaussures de sport</label><input type="text" id="eng-chaussures" placeholder="Écris ici..."><div class="hint">Une belle paire peut aussi donner envie de t'entraîner</div></div>
+      <div class="field"><label>Mon minimum vital</label><input type="text" id="eng-minimum" placeholder="Écris ici..."><div class="hint">Ex : 5 min de poids de corps — même en semaine catastrophique</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Le mode dégradé — 4 niveaux (voir Guide, Pilier 3)</div>
+      <div class="level-row" style="background:var(--green-bg);"><span class="tag" style="color:var(--green-txt);">NORMAL</span><span class="t">Ta séance complète telle que prévue.</span></div>
+      <div class="level-row" style="background:var(--cobalt-tint);"><span class="tag" style="color:var(--cobalt-deep);">RÉDUIT</span><span class="t">Semaine chargée — réduis la durée ou enlève des exercices proportionnellement.</span></div>
+      <div class="level-row" style="background:var(--paper-warm);"><span class="tag" style="color:var(--ink-soft);">MINIMUM</span><span class="t">Semaine difficile — le strict minimum pour ne pas casser la chaîne.</span></div>
+      <div class="level-row" style="background:var(--red-bg);"><span class="tag" style="color:var(--red-txt);">SURVIE</span><span class="t">Semaine catastrophique — quelques minutes suffisent. Ne disparais pas.</span></div>
+    </div>
+
+    <div class="card" style="background:var(--dark); border-color:var(--dark);">
+      <div class="card-head" style="background:var(--dark); color:var(--cream); border:1px solid var(--muted);">Tes 3 outils — utilise-les ensemble</div>
+      <p class="step" style="color:var(--cream); font-weight:600;">Guide Sport d'une vie — Lis-le une fois. Reviens sur les piliers si tu bloques.</p>
+      <p class="step" style="color:var(--cream); font-weight:600; margin-top:8px;"><strong>Tracker — Coche tes séances chaque semaine. (Tu es ici)</strong></p>
+      <p class="step" style="color:var(--cream); font-weight:600; margin-top:8px;">Guide d'Urgence — Ouvre-le quand la vie complique tout.</p>
+    </div>
+
+    <div class="save-note">Chaque modification faite dans l'application est enregistrée automatiquement, sur toutes les pages.</div>
+  </section>
+
+  <!-- ============ TRACKER ============ -->
+  <section id="tracker" class="section">
+    <div class="eyebrow">Suivre ses séances</div>
+    <h1>Tracker</h1>
+    <h2>Touche un jour pour changer son statut.</h2>
+
+    <div class="view-toggle">
+      <button id="viewMonthBtn" class="view-toggle-btn active">Mois</button>
+      <button id="viewYearBtn" class="view-toggle-btn">Année</button>
+    </div>
+
+    <div id="monthView">
+      <div class="card" style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px;">
+        <button id="prevMonth" class="navbtn mono">‹</button>
+        <div id="monthLabel" style="font-weight:600; font-size:14px;"></div>
+        <button id="nextMonth" class="navbtn mono">›</button>
+      </div>
+
+      <div class="weekday-row" id="weekdayRow"></div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <div id="yearView" style="display:none;">
+      <div class="card" style="text-align:center; padding:10px 12px;">
+        <button id="prevYear" class="navbtn mono" style="margin-right:10px;">‹</button>
+        <span style="font-weight:600; font-size:14px;" id="yearLabel"></span>
+        <button id="nextYear" class="navbtn mono" style="margin-left:10px;">›</button>
+      </div>
+      <div class="year-grid" id="yearGrid"></div>
+      <p class="year-hint">Vue d'ensemble — touche "Mois" pour cocher tes séances.</p>
+    </div>
+
+    <div class="legend">
+      <span><i class="dot" style="background:var(--green-bg); border:1px solid var(--green-txt);"></i>Fait</span>
+      <span><i class="dot" style="background:var(--red-bg); border:1px solid var(--red-txt);"></i>Non fait</span>
+      <span><i class="dot" style="background:var(--rest-bg); border:1px solid var(--rest-txt);"></i>Repos</span>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-n" id="statStreak">0</div><div class="stat-l">entraînements de suite</div></div>
+      <div class="stat-card"><div class="stat-n" id="statPct">0%</div><div class="stat-l" id="statPctLabel">ce mois-ci</div></div>
+      <div class="stat-card"><div class="stat-n" id="statTotal">0</div><div class="stat-l" id="statTotalLabel">séances / mois</div></div>
+    </div>
+
+    <div class="card">
+      <p class="step">Tape sur un jour pour indiquer si ton entraînement a été fait, non fait, ou si c'est un jour de repos.</p>
+      <p class="step" style="margin-top:8px;">Le % se calcule automatiquement sur les séances prévues uniquement.</p>
+      <p class="step" style="margin-top:8px;">Règle des 48h : jamais deux séances ratées d'affilée (voir Guide, Pilier 4).</p>
+    </div>
+
+  </section>
+
+  <!-- ============ BILAN TRIMESTRIEL ============ -->
+  <section id="trimestriel" class="section">
+    <div class="eyebrow">Tous les 3 mois</div>
+    <h1>Bilan trimestriel</h1>
+    <h2>Tous les 3 mois, fais le point. Ajuste ton système. Reste dans le jeu.</h2>
+    <div class="card">
+      <p class="step">→ Relis le Guide après chaque bilan pour te rappeler les piliers essentiels.</p>
+    </div>
+    <div id="quartersWrap"></div>
+    <div class="save-note">% calculé automatiquement depuis le tracker</div>
+  </section>
+
+  <!-- ============ BILAN TEMPS ============ -->
+  <section id="temps" class="section">
+    <div class="eyebrow">Où passe ton temps</div>
+    <h1>Bilan temps</h1>
+    <h2>Pas pour culpabiliser. Juste pour voir. On ne peut pas changer ce qu'on ne voit pas.</h2>
+
+    <div class="card">
+      <p class="step">→ Lis d'abord la section correspondante dans ton Guide (Pilier 1 — Construire)</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Partie 1 — Ma journée type</div>
+      <p class="step" style="margin-bottom:10px;">Pense à une journée habituelle de semaine. Estime honnêtement le temps passé sur chaque activité.</p>
+      <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;"><span>Activité</span><span>Heures / jour</span></div>
+      <div id="tempsTable"></div>
+      <div class="rythme-row" style="margin-top:4px;"><span class="n">Total</span><span class="n mono" id="tempsTotal">0h / 24h</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Partie 2 — Ce que je peux changer si nécessaire</div>
+      <p class="step" style="margin-bottom:10px;">Parmi les activités négociables, lesquelles pourrais-tu réduire pour libérer du temps pour le sport ? Pas tout supprimer — juste remettre les curseurs au bon endroit.</p>
+      <div id="tempsAjustWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Partie 3 — Mes non-négociables</div>
+      <p class="step" style="margin-bottom:10px;">Ces choses ne bougent pas. Elles font partie de ta vie et c'est normal. Ton système sportif doit s'adapter autour d'elles, pas les remplacer.</p>
+      <div id="tempsNonNegWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Partie 4 — Mon créneau sport</div>
+      <p class="step" style="margin-bottom:10px;">Après avoir fait le point, définis ton créneau. Pas idéal — réaliste.</p>
+      <div class="field"><label>Mon créneau sport réaliste</label><input type="text" id="temps-creneau" placeholder="Écris ici..."><div class="hint">Ex : Lundi 19h, jeudi 19h, samedi matin</div></div>
+      <div class="field"><label>Durée de chaque séance</label><input type="text" id="temps-duree" placeholder="Écris ici..."><div class="hint">Ex : 45 minutes</div></div>
+      <div class="field"><label>Ce que je réduis pour y arriver (si nécessaire)</label><input type="text" id="temps-reduis" placeholder="Écris ici..."><div class="hint">Ex : 30 min de réseaux en moins le soir</div></div>
+      <div class="field"><label>Mon engagement</label><p class="step" style="font-style:italic;">Je m'engage à tenir ce rythme pendant 1 an.</p></div>
+    </div>
+
+    <div class="card">
+      <p class="step" style="font-style:italic;">Ce bilan est pour toi. Il n'y a pas de bonne ou mauvaise réponse. L'important c'est d'être honnête avec toi-même.</p>
+    </div>
+
+  </section>
+
+  <!-- ============ ENVIRONNEMENT ============ -->
+  <section id="environnement" class="section">
+    <div class="eyebrow">Pilier 1</div>
+    <h1>Protocole environnement</h1>
+    <h2>Ton environnement (physique et numérique) doit travailler pour toi. À faire une fois, puis révision tous les 3 mois. (Guide, Pilier 1)</h2>
+
+    <div class="card">
+      <div class="card-head">Étape 1 — Nettoyer — Recalibrage réseaux</div>
+      <p class="step" style="margin-bottom:8px;">Sur Instagram, TikTok, YouTube et toute autre plateforme :</p>
+      <p class="step">— Désabonne-toi de tout compte qui ne t'apporte aucune valeur</p>
+      <p class="step">— Sur chaque contenu inutile : clique sur « Ça ne m'intéresse pas » ou « Ne plus voir »</p>
+      <p class="step">— Identifie les comptes qui te font le plus perdre de temps — désabonne-toi</p>
+      <p class="step">— Ne passe pas trop de temps à scroller à l'infini — ça dérègle ta dopamine et diminue l'envie de t'entraîner</p>
+    </div>
+    <div class="card">
+      <div class="card-head">Étape 2 — Reconstruire</div>
+      <p class="step" style="margin-bottom:8px;">Abonne-toi à des comptes qui renforcent ton identité sportive :</p>
+      <p class="step">+ Suis des sportifs amateurs qui s'entraînent régulièrement (pas que des pros)</p>
+      <p class="step">+ Suis des comptes de conseils pratiques : sport, récupération, nutrition simple</p>
+      <p class="step">✗ Évite les « transformation en 30 jours » — ils vendent du court terme, pas de la continuité</p>
+      <p class="step">+ Trouve des personnes avec qui t'entraîner si nécessaire — aller au sport pour partager un bon moment rend l'action plus facile</p>
+    </div>
+    <div class="card">
+      <div class="card-head">Étape 3 — Ancrer</div>
+      <p class="step">→ Mets-toi dans une tenue où tu te sens bien, beau/belle, qui te donne envie de t'entraîner</p>
+      <p class="step">→ Une belle paire de chaussures de sport peut aussi jouer ce rôle</p>
+      <p class="step">→ Écoute de la musique que tu aimes pendant tes séances — ton cerveau associe plaisir et effort</p>
+      <p class="step">→ Planifie ta séance à l'avance — le jour J tu n'as qu'à appliquer, sans réflexion</p>
+      <p class="step">→ Mets un rappel avant ta séance pour ne pas oublier</p>
+      <p class="step">→ Prépare ce dont tu as besoin la veille — toujours au même endroit, visible et à portée de main, pour limiter toute friction</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Révision tous les 3 mois — à faire en même temps que le Bilan Trimestriel</div>
+      <div id="envRevision"></div>
+    </div>
+  </section>
+
+  <!-- ============ PROGRESSION PHOTOS ============ -->
+  <section id="photos" class="section">
+    <div class="eyebrow">Preuve visuelle</div>
+    <h1>Suivi photos — Progression visuelle</h1>
+
+    <div class="card">
+      <p class="step">Recommandé si tu as un objectif de transformation physique visible (prise de masse, perte de poids).</p>
+      <p class="step" style="margin-top:8px;">Optionnel si ton objectif est principalement la performance ou le bien-être.</p>
+    </div>
+
+    <div class="card">
+      <div class="field" style="overflow:hidden;"><label>Date</label><input type="date" id="photo-date"></div>
+      <div class="field"><label>Note / ressenti</label><input type="text" id="photo-note" placeholder="Comment tu te sens ?"></div>
+      <div class="field"><label>Poids (optionnel)</label><input type="text" id="photo-poids" placeholder="kg"></div>
+      <button id="addPhoto" class="btn-primary">Ajouter une entrée</button>
+    </div>
+
+    <div id="photosList"></div>
+
+    <div class="card">
+      <div class="card-head">Conseils photo</div>
+      <p class="step">Toujours au même endroit (même mur, même fond)</p>
+      <p class="step">Toujours à la même heure (le matin à jeun, idéalement)</p>
+      <p class="step">Même éclairage — même lampe, même position</p>
+      <p class="step">Même tenue</p>
+      <p class="step">Active une alerte dans ton téléphone toutes les 2 semaines</p>
+    </div>
+
+  </section>
+
+  <!-- ============ PROTOCOLE RECHUTE ============ -->
+  <section id="rechute" class="section">
+    <div class="eyebrow">Pilier 4</div>
+    <h1>Protocole rechute</h1>
+    <h2>Tout le monde s'arrête. La différence c'est ce que tu fais dans les 48h qui suivent. (Guide, Pilier 4)</h2>
+
+    <div class="card">
+      <div class="card-head">La règle des 48h</div>
+      <div class="quote-box" style="margin:0;">
+        <p>Tu as le droit de rater une séance. Tu n'as jamais le droit d'en rater deux d'affilée.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Protocole J+1 — Le lendemain de la rechute</div>
+      <p class="step"><strong>1.</strong> Pas de jugement. Une séance ratée ne détruit pas des semaines de travail.</p>
+      <p class="step" style="margin-top:6px;"><strong>2.</strong> Rouvre ce tracker. Regarde tout ce que tu as déjà fait cette année.</p>
+      <p class="step" style="margin-top:6px;"><strong>3.</strong> Planifie ta prochaine séance maintenant. Une heure précise, pas « bientôt ».</p>
+      <p class="step" style="margin-top:6px;"><strong>4.</strong> Réduis la séance si besoin. 20 minutes valent mieux que zéro.</p>
+      <p class="step" style="margin-top:6px;"><strong>5.</strong> Si tu es épuisé(e) : priorité au sommeil. Ne sacrifie jamais le sommeil. (Guide, Pilier 2)</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Si tu t'es arrêté(e) dans ton entraînement</div>
+      <div class="rythme-row"><span class="n mono">&lt; 1 sem.</span><span class="d">Reprends normalement. La pause n'a rien changé.</span></div>
+      <div class="rythme-row"><span class="n mono">1–4 sem.</span><span class="d">Reprends à 70 % pendant 1 semaine, puis retour normal.</span></div>
+      <div class="rythme-row"><span class="n mono">1–3 mois</span><span class="d">Reprends à 50 % pendant 2 semaines. Sans culpabilité, sans héroïsme.</span></div>
+      <div class="rythme-row"><span class="n mono">&gt; 3 mois</span><span class="d">Recommence presque depuis le début. C'est une nouvelle saison, pas un échec.</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Rappel identité</div>
+      <div class="quote-box" style="margin:0 0 8px;"><p>« Je suis quelqu'un qui revient toujours. »</p></div>
+      <p class="step">Relis cette phrase à chaque fois que tu doutes. Ce n'est pas un slogan. C'est la personne que tu es.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Analyse de l'arrêt — Pour ne plus revivre la même situation</div>
+      <div id="rechuteFields"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <svg class="continuity" viewBox="0 0 300 60" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,30 C25,12 42,8 60,20 C80,34 85,45 105,40 C125,35 130,15 150,12 C170,9 180,28 200,35 C220,42 235,44 255,32 C270,24 280,26 295,20"
+          fill="none" stroke="#28359C" stroke-width="2.6" stroke-linecap="round"/>
+    <circle cx="295" cy="20" r="4.5" fill="#28359C"/>
+  </svg>
+  <p>Sport d'une vie — système complet</p>
+</footer>
+
+<script>
+/* ---------- storage helpers (standard browser localStorage — works everywhere) ---------- */
+const STORAGE_PREFIX = 'sportdunevie:';
+async function loadKey(key, fallback){
+  try{
+    const raw = localStorage.getItem(STORAGE_PREFIX + key);
+    return raw ? JSON.parse(raw) : fallback;
+  }catch(e){ console.error('load failed', key, e); return fallback; }
+}
+async function saveKey(key, value){
+  try{ localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value)); }
+  catch(e){ console.error('save failed', key, e); }
+}
+function debounce(fn, ms){
+  let t;
+  return function(...args){ clearTimeout(t); t = setTimeout(()=>fn(...args), ms); };
+}
+
+/* ---------- state ---------- */
+const state = {
+  engagement: {sport:'',rythme:'',jours:'',heure:'',musique:'',tenue:'',chaussures:'',minimum:''},
+  tracker: {},
+  bilans: { T1:{}, T2:{}, T3:{}, T4:{} },
+  temps: { hours:{}, priorites:{}, ajustements:['','','',''], ajustementsActuel:['','','',''], ajustementsVise:['','','',''], nonNegociables:['','','','',''], creneau:'', duree:'', reduis:'' },
+  environnement: { revision:{ Mars:'', Juin:'', Septembre:'', Décembre:'' } },
+  photos: [],
+  rechute: {}
+};
+
+const ACTIVITIES = ['Travail / études','Transports','Repas — préparation + prise','Sommeil','Réseaux sociaux','Séries / films / TV','Jeux vidéo','Famille / couple','Autres loisirs','Sport'];
+const PRIORITY_LEVELS = ['Obligatoire','Prioritaire','Secondaire','Négociable','Non essentiel'];
+const PRIORITY_DEFAULT = {
+  'Travail / études':'Obligatoire',
+  'Transports':'Prioritaire',
+  'Repas — préparation + prise':'Prioritaire',
+  'Sommeil':'Obligatoire',
+  'Réseaux sociaux':'Négociable',
+  'Séries / films / TV':'Négociable',
+  'Jeux vidéo':'Négociable',
+  'Famille / couple':'Prioritaire',
+  'Autres loisirs':'Secondaire',
+  'Sport':'Prioritaire'
+};
+const RECHUTE_Q = [
+  'Pourquoi je me suis arrêté(e) ?',
+  "Est-ce que c'était prévisible ?",
+  "Qu'aurais-je pu faire autrement ?",
+  "Comment l'anticiper la prochaine fois ?",
+  'Qu\'est-ce que je mets en place dès maintenant ?'
+];
+const MONTH_NAMES = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const WEEKDAYS = ['L','M','M','J','V','S','D'];
+
+let calMonth = new Date().getMonth();
+let calYear = new Date().getFullYear();
+let yearGridYear = new Date().getFullYear();
+let viewMode = 'month'; // 'month' | 'year'
+const todayKey = fmtDate(new Date());
+
+function fmtDate(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+/* ---------- tabs ---------- */
+const TABS = [
+  {id:'accueil', label:'ACCUEIL'},
+  {id:'tracker', label:'TRACKER'},
+  {id:'trimestriel', label:'BILAN T.'},
+  {id:'temps', label:'TEMPS'},
+  {id:'environnement', label:'ENVIRON.'},
+  {id:'photos', label:'PHOTOS'},
+  {id:'rechute', label:'RECHUTE'}
+];
+function renderTabs(){
+  const bar = document.getElementById('tabbar');
+  bar.innerHTML = TABS.map(t => '<button class="tab" data-id="'+t.id+'">'+t.label+'</button>').join('');
+  bar.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => showSection(btn.dataset.id)));
+}
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === id));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.id === id));
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+/* ---------- ACCUEIL ---------- */
+function bindEngagement(){
+  const map = {sport:'eng-sport', rythme:'eng-rythme', jours:'eng-jours', heure:'eng-heure', musique:'eng-musique', tenue:'eng-tenue', chaussures:'eng-chaussures', minimum:'eng-minimum'};
+  const save = debounce(()=> saveKey('engagement', state.engagement), 500);
+  Object.entries(map).forEach(([k,id])=>{
+    const el = document.getElementById(id);
+    el.value = state.engagement[k] || '';
+    el.addEventListener('input', ()=>{ state.engagement[k] = el.value; save(); });
+  });
+}
+
+/* ---------- TRACKER ---------- */
+function statusClass(s){
+  if(s==='fait') return 'fait';
+  if(s==='nonfait') return 'nonfait';
+  if(s==='repos') return 'repos';
+  return '';
+}
+function nextStatus(s){
+  if(!s) return 'fait';
+  if(s==='fait') return 'nonfait';
+  if(s==='nonfait') return 'repos';
+  return '';
+}
+function renderWeekdayRow(){
+  const row = document.getElementById('weekdayRow');
+  row.innerHTML = WEEKDAYS.map((w,i)=> '<span class="'+(i>=5?'weekend':'')+'">'+w+'</span>').join('');
+}
+function renderCalendar(){
+  document.getElementById('monthLabel').textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
+  const grid = document.getElementById('calGrid');
+  const first = new Date(calYear, calMonth, 1);
+  const startOffset = (first.getDay() + 6) % 7;
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  let html = '';
+  for(let i=0;i<startOffset;i++) html += '<div class="day-cell empty"></div>';
+  for(let d=1; d<=daysInMonth; d++){
+    const dateObj = new Date(calYear, calMonth, d);
+    const key = fmtDate(dateObj);
+    const isWeekend = ((dateObj.getDay()+6)%7) >= 5;
+    const status = state.tracker[key];
+    const cls = ['day-cell'];
+    if(status) cls.push(statusClass(status));
+    else if(isWeekend) cls.push('weekend-off');
+    if(key===todayKey) cls.push('today');
+    html += '<div class="'+cls.join(' ')+'" data-key="'+key+'">'+d+'</div>';
+  }
+  grid.innerHTML = html;
+  grid.querySelectorAll('.day-cell:not(.empty)').forEach(cell=>{
+    cell.addEventListener('click', ()=>{
+      const key = cell.dataset.key;
+      const cur = state.tracker[key];
+      const nxt = nextStatus(cur);
+      if(nxt) state.tracker[key] = nxt; else delete state.tracker[key];
+      saveKey('tracker', state.tracker);
+      renderCalendar();
+      renderStats();
+      renderQuarters();
+      if(viewMode==='year') renderYearGrid();
+    });
+  });
+}
+
+/* ---------- YEAR VIEW (vue d'ensemble, non éditable) ---------- */
+const MONTH_SHORT = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
+function renderYearGrid(){
+  document.getElementById('yearLabel').textContent = yearGridYear;
+  const wrap = document.getElementById('yearGrid');
+  let html = '';
+  for(let m=0; m<12; m++){
+    const first = new Date(yearGridYear, m, 1);
+    const startOffset = (first.getDay() + 6) % 7;
+    const daysInMonth = new Date(yearGridYear, m+1, 0).getDate();
+    let cells = '';
+    for(let i=0;i<startOffset;i++) cells += '<div class="mm-cell empty"></div>';
+    for(let d=1; d<=daysInMonth; d++){
+      const key = fmtDate(new Date(yearGridYear, m, d));
+      const status = state.tracker[key];
+      cells += '<div class="mm-cell'+(status? ' '+statusClass(status):'')+'"></div>';
+    }
+    html += '<div class="mini-month"><div class="mm-label">'+MONTH_SHORT[m]+'</div><div class="mm-grid">'+cells+'</div></div>';
+  }
+  wrap.innerHTML = html;
+}
+
+function setViewMode(mode){
+  viewMode = mode;
+  const isMonth = mode === 'month';
+  document.getElementById('monthView').style.display = isMonth ? 'block' : 'none';
+  document.getElementById('yearView').style.display = isMonth ? 'none' : 'block';
+  document.getElementById('viewMonthBtn').classList.toggle('active', isMonth);
+  document.getElementById('viewYearBtn').classList.toggle('active', !isMonth);
+  if(!isMonth) renderYearGrid();
+  renderStats();
+}
+document.getElementById('viewMonthBtn').addEventListener('click', ()=> setViewMode('month'));
+document.getElementById('viewYearBtn').addEventListener('click', ()=> setViewMode('year'));
+document.getElementById('prevYear').addEventListener('click', ()=>{ yearGridYear--; renderYearGrid(); renderStats(); });
+document.getElementById('nextYear').addEventListener('click', ()=>{ yearGridYear++; renderYearGrid(); renderStats(); });
+
+function computeStreak(){
+  // Trouve la date du dernier "fait", puis compte la série consécutive qui se termine là
+  // (les jours de repos ne cassent pas la série, mais ne comptent pas non plus)
+  const faitDates = Object.keys(state.tracker).filter(k => state.tracker[k] === 'fait').sort();
+  if(!faitDates.length) return 0;
+  const lastFait = faitDates[faitDates.length - 1];
+  let streak = 0;
+  let d = new Date(lastFait + 'T00:00:00');
+  while(true){
+    const key = fmtDate(d);
+    const s = state.tracker[key];
+    if(s === 'fait'){ streak++; d.setDate(d.getDate()-1); continue; }
+    if(s === 'repos'){ d.setDate(d.getDate()-1); continue; }
+    break;
+  }
+  return streak;
+}
+function renderStats(){
+  const streak = computeStreak();
+  document.getElementById('statStreak').textContent = streak;
+
+  if(viewMode === 'month'){
+    let fait=0, nonfait=0;
+    Object.keys(state.tracker).forEach(k=>{
+      const [y,m] = k.split('-').map(Number);
+      if(y===calYear && m-1===calMonth){
+        if(state.tracker[k]==='fait') fait++;
+        if(state.tracker[k]==='nonfait') nonfait++;
+      }
+    });
+    const pct = (fait+nonfait) ? Math.round(fait/(fait+nonfait)*100) : 0;
+    document.getElementById('statPct').textContent = pct+'%';
+    document.getElementById('statPctLabel').textContent = 'ce mois-ci';
+    document.getElementById('statTotal').textContent = fait;
+    document.getElementById('statTotalLabel').textContent = 'séances / mois';
+  } else {
+    let fait=0, nonfait=0;
+    Object.keys(state.tracker).forEach(k=>{
+      if(k.startsWith(String(yearGridYear))){
+        if(state.tracker[k]==='fait') fait++;
+        if(state.tracker[k]==='nonfait') nonfait++;
+      }
+    });
+    const pct = (fait+nonfait) ? Math.round(fait/(fait+nonfait)*100) : 0;
+    document.getElementById('statPct').textContent = pct+'%';
+    document.getElementById('statPctLabel').textContent = 'cette année';
+    document.getElementById('statTotal').textContent = fait;
+    document.getElementById('statTotalLabel').textContent = 'séances / an';
+  }
+}
+document.getElementById('prevMonth').addEventListener('click', ()=>{
+  calMonth--; if(calMonth<0){ calMonth=11; calYear--; }
+  renderCalendar(); renderStats();
+});
+document.getElementById('nextMonth').addEventListener('click', ()=>{
+  calMonth++; if(calMonth>11){ calMonth=0; calYear++; }
+  renderCalendar(); renderStats();
+});
+
+/* ---------- BILAN TRIMESTRIEL ---------- */
+const QUARTERS = [
+  {id:'T1', label:'T1 — Janvier / Février / Mars', months:[0,1,2]},
+  {id:'T2', label:'T2 — Avril / Mai / Juin', months:[3,4,5]},
+  {id:'T3', label:'T3 — Juillet / Août / Septembre', months:[6,7,8]},
+  {id:'T4', label:'T4 — Octobre / Novembre / Décembre', months:[9,10,11]}
+];
+const FIELDS = [
+  {k:'bien', l:'Ce qui a bien fonctionné', p:''},
+  {k:'bloque', l:'Ce qui a bloqué', p:''},
+  {k:'raison', l:"Les raisons d'absence", p:'Si une ou plusieurs absences ont eu lieu...'},
+  {k:'ajustement', l:'Mon ajustement pour le prochain trimestre', p:''},
+  {k:'niveau', l:'Mon niveau actuel', p:'Normal, Réduit, Minimum ou Survie ?'},
+  {k:'objectif', l:'Mon prochain objectif', p:''}
+];
+function quarterPct(q){
+  const yr = new Date().getFullYear();
+  let fait=0, nonfait=0;
+  Object.keys(state.tracker).forEach(k=>{
+    const [y,m] = k.split('-').map(Number);
+    if(y===yr && q.months.includes(m-1)){
+      if(state.tracker[k]==='fait') fait++;
+      if(state.tracker[k]==='nonfait') nonfait++;
+    }
+  });
+  return (fait+nonfait) ? Math.round(fait/(fait+nonfait)*100) : 0;
+}
+function renderQuarters(){
+  const wrap = document.getElementById('quartersWrap');
+  wrap.innerHTML = QUARTERS.map(q => {
+    const fieldsHtml = FIELDS.map(f => (
+      '<div class="field"><label>'+f.l+'</label><textarea data-q="'+q.id+'" data-f="'+f.k+'" placeholder="'+f.p+'">'+((state.bilans[q.id]&&state.bilans[q.id][f.k])||'')+'</textarea></div>'
+    )).join('');
+    return '<div class="card quarter-card"><div class="card-head">'+q.label+'</div>'+
+      '<div class="quarter-pct"><span>% de réussite (auto)</span><span class="n">'+quarterPct(q)+'%</span></div>'+
+      fieldsHtml+'</div>';
+  }).join('');
+  const save = debounce(()=> saveKey('bilans', state.bilans), 500);
+  wrap.querySelectorAll('textarea').forEach(ta=>{
+    ta.addEventListener('input', ()=>{
+      const q = ta.dataset.q, f = ta.dataset.f;
+      if(!state.bilans[q]) state.bilans[q] = {};
+      state.bilans[q][f] = ta.value;
+      save();
+    });
+  });
+}
+
+/* ---------- BILAN TEMPS ---------- */
+function renderTemps(){
+  const wrap = document.getElementById('tempsTable');
+  wrap.innerHTML = ACTIVITIES.map(a => {
+    const current = state.temps.priorites[a] || PRIORITY_DEFAULT[a];
+    const options = PRIORITY_LEVELS.map(l => '<option value="'+l+'"'+(l===current?' selected':'')+'>'+l+'</option>').join('');
+    return '<div style="border-bottom:1px solid var(--line); padding:7px 0;">'+
+      '<div class="temps-row" style="border:none; padding:0 0 5px;">'+
+      '<span class="a">'+a+'</span>'+
+      '<input type="number" min="0" max="24" step="0.5" data-a="'+a+'" value="'+((state.temps.hours[a])||'')+'">'+
+      '</div>'+
+      '<select data-priority-a="'+a+'" style="width:100%; font-size:11px; padding:5px 8px;">'+options+'</select></div>';
+  }).join('');
+  const save = debounce(()=>{ saveKey('temps', state.temps); updateTempsTotal(); }, 400);
+  wrap.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      state.temps.hours[inp.dataset.a] = inp.value;
+      save();
+    });
+  });
+  wrap.querySelectorAll('select').forEach(sel=>{
+    sel.addEventListener('change', ()=>{
+      state.temps.priorites[sel.dataset.priorityA] = sel.value;
+      saveKey('temps', state.temps);
+    });
+  });
+  updateTempsTotal();
+
+  const ajustWrap = document.getElementById('tempsAjustWrap');
+  ajustWrap.innerHTML = [0,1,2,3].map(i =>
+    '<div class="field" style="border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:10px;">'+
+    '<label>Activité à ajuster</label><input type="text" data-ajust-i="'+i+'" data-ajust-f="activite" value="'+(state.temps.ajustements[i]||'')+'" placeholder="→">'+
+    '<div style="display:flex; gap:8px; margin-top:6px;">'+
+    '<div style="flex:1;"><label style="font-size:10px;">Temps actuel</label><input type="text" data-ajust-i="'+i+'" data-ajust-f="actuel" value="'+(state.temps.ajustementsActuel[i]||'')+'"></div>'+
+    '<div style="flex:1;"><label style="font-size:10px;">Temps visé</label><input type="text" data-ajust-i="'+i+'" data-ajust-f="vise" value="'+(state.temps.ajustementsVise[i]||'')+'"></div>'+
+    '</div></div>'
+  ).join('');
+  const saveAjust = debounce(()=> saveKey('temps', state.temps), 500);
+  ajustWrap.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const i = parseInt(inp.dataset.ajustI);
+      const f = inp.dataset.ajustF;
+      if(f==='activite') state.temps.ajustements[i] = inp.value;
+      if(f==='actuel') state.temps.ajustementsActuel[i] = inp.value;
+      if(f==='vise') state.temps.ajustementsVise[i] = inp.value;
+      saveAjust();
+    });
+  });
+
+  const nnWrap = document.getElementById('tempsNonNegWrap');
+  nnWrap.innerHTML = [0,1,2,3,4].map(i =>
+    '<div class="field"><input type="text" data-nn-i="'+i+'" value="'+(state.temps.nonNegociables[i]||'')+'" placeholder="→"></div>'
+  ).join('');
+  const saveNN = debounce(()=> saveKey('temps', state.temps), 500);
+  nnWrap.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      state.temps.nonNegociables[parseInt(inp.dataset.nnI)] = inp.value;
+      saveNN();
+    });
+  });
+
+  const map = {creneau:'temps-creneau', duree:'temps-duree', reduis:'temps-reduis'};
+  const saveMeta = debounce(()=> saveKey('temps', state.temps), 500);
+  Object.entries(map).forEach(([k,id])=>{
+    const el = document.getElementById(id);
+    el.value = state.temps[k] || '';
+    el.addEventListener('input', ()=>{ state.temps[k] = el.value; saveMeta(); });
+  });
+}
+function updateTempsTotal(){
+  const total = Object.values(state.temps.hours).reduce((s,v)=> s + (parseFloat(v)||0), 0);
+  document.getElementById('tempsTotal').textContent = total + 'h / 24h';
+}
+
+/* ---------- ENVIRONNEMENT ---------- */
+function renderEnv(){
+  const wrap = document.getElementById('envRevision');
+  const months = ['Mars','Juin','Septembre','Décembre'];
+  wrap.innerHTML = months.map(m =>
+    '<div class="revision-row"><span class="m">'+m+'</span><input type="text" data-m="'+m+'" placeholder="Réalisé (O/N) + changements" value="'+((state.environnement.revision[m])||'')+'"></div>'
+  ).join('');
+  const save = debounce(()=> saveKey('environnement', state.environnement), 500);
+  wrap.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      state.environnement.revision[inp.dataset.m] = inp.value;
+      save();
+    });
+  });
+}
+
+/* ---------- PHOTOS ---------- */
+function renderPhotos(){
+  const list = document.getElementById('photosList');
+  if(!state.photos.length){
+    list.innerHTML = '<p style="font-size:11.5px; color:var(--muted); text-align:center; padding:10px;">Aucune entrée pour l\'instant.</p>';
+    return;
+  }
+  list.innerHTML = state.photos.slice().reverse().map((p,ri) => {
+    const i = state.photos.length - 1 - ri;
+    return '<div class="photo-entry"><div><div class="pd">'+p.date+'</div><div class="pn">'+(p.note||'—')+(p.poids? ' · '+p.poids+' kg':'')+'</div></div><button class="btn-ghost" data-i="'+i+'">Suppr.</button></div>';
+  }).join('');
+  list.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.photos.splice(parseInt(btn.dataset.i),1);
+      saveKey('photos', state.photos);
+      renderPhotos();
+    });
+  });
+}
+document.getElementById('addPhoto').addEventListener('click', ()=>{
+  const date = document.getElementById('photo-date').value;
+  const note = document.getElementById('photo-note').value;
+  const poids = document.getElementById('photo-poids').value;
+  if(!date) return;
+  state.photos.push({date, note, poids});
+  saveKey('photos', state.photos);
+  document.getElementById('photo-date').value='';
+  document.getElementById('photo-note').value='';
+  document.getElementById('photo-poids').value='';
+  renderPhotos();
+});
+
+/* ---------- RECHUTE ---------- */
+function renderRechute(){
+  const wrap = document.getElementById('rechuteFields');
+  wrap.innerHTML = RECHUTE_Q.map((q,i) =>
+    '<div class="field"><label>'+q+'</label><textarea data-i="'+i+'">'+((state.rechute['q'+i])||'')+'</textarea></div>'
+  ).join('');
+  const save = debounce(()=> saveKey('rechute', state.rechute), 500);
+  wrap.querySelectorAll('textarea').forEach(ta=>{
+    ta.addEventListener('input', ()=>{
+      state.rechute['q'+ta.dataset.i] = ta.value;
+      save();
+    });
+  });
+}
+
+/* ---------- init ---------- */
+async function init(){
+  renderTabs();
+  showSection('accueil');
+  renderWeekdayRow();
+
+  const [eng, trk, bil, tmp, env, pho, rec] = await Promise.all([
+    loadKey('engagement', state.engagement),
+    loadKey('tracker', {}),
+    loadKey('bilans', state.bilans),
+    loadKey('temps', state.temps),
+    loadKey('environnement', state.environnement),
+    loadKey('photos', []),
+    loadKey('rechute', {})
+  ]);
+  state.engagement = Object.assign({}, state.engagement, eng);
+  state.tracker = trk; state.bilans = bil;
+  state.temps = Object.assign({}, state.temps, tmp);
+  state.temps.hours = Object.assign({}, tmp && tmp.hours);
+  state.temps.priorites = Object.assign({}, tmp && tmp.priorites);
+  state.environnement = Object.assign({}, state.environnement, env, {revision: Object.assign({}, state.environnement.revision, env && env.revision)});
+  state.photos = pho; state.rechute = rec;
+
+  bindEngagement();
+  renderCalendar();
+  renderStats();
+  renderQuarters();
+  renderTemps();
+  renderEnv();
+  renderPhotos();
+  renderRechute();
+
+  const ls = document.getElementById('loadingScreen');
+  if(ls) ls.remove();
+}
+init().catch(err=>{
+  console.error(err);
+  const ls = document.getElementById('loadingScreen');
+  if(ls) ls.innerHTML = '<div class="mono" style="color:var(--cream); font-size:10px; text-align:center; padding:0 30px;">Une erreur est survenue. Recharge la page.</div>';
+});
+</script>
+</body>
+</html>
